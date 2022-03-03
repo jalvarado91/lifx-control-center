@@ -1,27 +1,87 @@
-import classNames from "classnames";
+import React from "react";
 import { useState } from "react";
+import { ActionButton } from "./ActionButton";
+import { AuthProvider, useAuth } from "./AuthContext";
+import { ToastProvider, useToast } from "./ToastContext";
 
 export const Popup = () => {
   return (
     <Screen>
-      <App />
+      <AuthProvider>
+        <ToastProvider>
+          <App />
+        </ToastProvider>
+      </AuthProvider>
     </Screen>
   );
 };
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState<
-    "login" | "main" | "settings"
-  >("login");
+  const { token } = useAuth();
 
-  return <LoginScreen />;
+  return !token ? <LoginScreen /> : <LightsScreen />;
+}
+
+function LightsScreen() {
+  const { token, clearToken } = useAuth();
+
+  return (
+    <div>
+      Lights: {token}
+      <button onClick={() => clearToken()}>Remove token</button>
+    </div>
+  );
 }
 
 function Screen({ children }: { children: React.ReactNode }) {
   return <div className="w-full h-[600px] p-5 antialiased">{children}</div>;
 }
 
+function useLoginScreen() {
+  const { showToast } = useToast();
+  const { setToken } = useAuth();
+  const [verificationState, setVerificationState] = useState<
+    "pending" | "success" | "idle"
+  >("idle");
+
+  function verifyToken(token: string) {
+    setVerificationState("pending");
+    fetch(`https://api.lifx.com/v1/lights/all`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (res.ok) {
+          setToken(token);
+          setVerificationState("success");
+        } else {
+          setVerificationState("idle");
+          showToast("Invalid token", "red");
+        }
+      })
+      .catch(() => {
+        setVerificationState("idle");
+      });
+  }
+
+  return {
+    verificationState,
+    verifyToken,
+  };
+}
+
 function LoginScreen() {
+  const [accessToken, setAccessToken] = useState("");
+
+  const { verifyToken, verificationState } = useLoginScreen();
+
+  const canSubmit = accessToken.length > 0;
+
+  async function onAuthorize() {
+    verifyToken(accessToken.trim());
+  }
+
   return (
     <div className="flex flex-col text-base space-y-12 h-full justify-center items-center">
       <div className="text-center flex flex-col items-center justify-center">
@@ -51,36 +111,21 @@ function LoginScreen() {
         </div>
         <div className="space-y-4">
           <div>Enter the token generated above</div>
-          <textarea className="w-full bg-zinc-800 font-mono text-xs p-4 pb-6 rounded-lg"></textarea>
-          <ActionButton variant="secondary" onClick={() => console.log("main")}>
+          <textarea
+            value={accessToken}
+            onChange={(e) => setAccessToken(e.target.value)}
+            className="w-full bg-zinc-800 font-mono text-xs p-4 pb-6 rounded-lg"
+          ></textarea>
+          <ActionButton
+            disabled={!canSubmit}
+            loading={verificationState === "pending"}
+            variant="secondary"
+            onClick={onAuthorize}
+          >
             Authorize
           </ActionButton>
         </div>
       </div>
     </div>
-  );
-}
-
-function ActionButton({
-  children,
-  onClick,
-  variant = "primary",
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-  variant?: "primary" | "secondary" | "danger";
-}) {
-  return (
-    <button
-      className={classNames(
-        "w-full rounded-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-4",
-        variant === "primary" && "bg-sky-500 hover:bg-sky-600",
-        variant === "secondary" && "bg-green-500 hover:bg-green-600",
-        variant === "danger" && "bg-red-500 hover:bg-red-600"
-      )}
-      onClick={onClick}
-    >
-      {children}
-    </button>
   );
 }
