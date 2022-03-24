@@ -6,17 +6,22 @@ const AuthContext = React.createContext<{
   token: string | null;
   setToken: (token: string | null) => void;
   clearToken: () => void;
+  status: "loading" | "idle";
 }>({
   token: null,
   setToken: () => {},
   clearToken: () => {},
+  status: "loading",
 });
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
+  const [state, setState] = useState<"idle" | "loading">("loading");
 
   useEffect(() => {
+    setState("loading");
     storage.local.get("token").then((data) => {
       setToken(data.token);
+      setState("idle");
     });
   }, []);
 
@@ -31,7 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ token, setToken: setTokenLocal, clearToken }}
+      value={{ token, setToken: setTokenLocal, clearToken, status: state }}
     >
       {children}
     </AuthContext.Provider>
@@ -47,5 +52,6 @@ export function useAuth() {
     token: context.token,
     setToken: context.setToken,
     clearToken: context.clearToken,
+    status: context.status,
   };
 }
