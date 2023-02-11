@@ -16,7 +16,7 @@ export function LoginScreen() {
   }
 
   return (
-    <div className="flex flex-col text-base space-y-12 h-full justify-center items-center">
+    <div className="flex flex-col text-base space-y-12 p-5 h-full justify-center items-center">
       <div className="text-center flex flex-col items-center justify-center">
         <div className="text-xl font-bold">
           <span role="img" aria-label="light">
