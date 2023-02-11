@@ -12,8 +12,10 @@ function useGroup(id: string) {
   return groups.find((g) => g.id === id);
 }
 
-export function LightsScreen() {
-  const { clearToken } = useAuth();
+interface LightScreenProps {
+  onSettingsClick: () => void;
+}
+export function LightsScreen({ onSettingsClick }: LightScreenProps) {
   const { isLoading, data } = useLights();
 
   return (
@@ -25,14 +27,13 @@ export function LightsScreen() {
       ) : (
         <div className="flex flex-col w-full h-full">
           <div className="flex flex-grow-0 px-5 py-5 shadow-2xl">
-            <LocationControls />
+            <LocationControls onSettingsClick={onSettingsClick} />
           </div>
 
           <div className="flex h-full flex-col space-y-12 px-5 pt-4 pb-6 overflow-y-auto">
             {data?.groups.map((group: IGroup) => (
               <LightGroup key={group.id} groupId={group.id} />
             ))}
-            <button onClick={() => clearToken()}>Remove token</button>
           </div>
         </div>
       )}

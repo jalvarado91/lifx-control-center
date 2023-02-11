@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { QueryClientProvider } from "react-query";
 import { AuthProvider, useAuth } from "./AuthContext";
 import { LightsScreen } from "./LightsScreen/LightsScreen";
@@ -6,6 +7,7 @@ import { OvalSpinner } from "./OvalSpinner";
 import { popupQueryClient } from "./popupQueryClient";
 import { Screen } from "./Screen";
 import { ToastProvider } from "./ToastContext";
+import { SettingsScreen } from "./SettingsScreen";
 
 export const Popup = () => {
   return (
@@ -26,5 +28,22 @@ function App() {
   if (status === "loading") {
     return <OvalSpinner />;
   }
-  return !token ? <LoginScreen /> : <LightsScreen />;
+  return !token ? <LoginScreen /> : <AuthedScreens />;
+}
+
+function AuthedScreens() {
+  const [activeScreen, setActiveScreen] = useState<"lights" | "settings">(
+    "lights"
+  );
+
+  return (
+    <>
+      {activeScreen === "lights" && (
+        <LightsScreen onSettingsClick={() => setActiveScreen("settings")} />
+      )}
+      {activeScreen === "settings" && (
+        <SettingsScreen onClose={() => setActiveScreen("lights")} />
+      )}
+    </>
+  );
 }
