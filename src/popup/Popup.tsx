@@ -1,6 +1,6 @@
 import { QueryClientProvider } from "react-query";
 import { AuthProvider, useAuth } from "./AuthContext";
-import { LightsScreen } from "./LightsScreen";
+import { LightsScreen } from "./LightsScreen/LightsScreen";
 import { LoginScreen } from "./LoginScreen";
 import { OvalSpinner } from "./OvalSpinner";
 import { popupQueryClient } from "./popupQueryClient";

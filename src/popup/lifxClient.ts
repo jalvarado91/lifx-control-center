@@ -1,22 +1,31 @@
-export async function getLights(token: string): Promise<Light[]> {
+export async function getLights(token: string): Promise<ILight[]> {
   return fetch("https://api.lifx.com/v1/lights/all", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  }).then((res) => res.json() as Promise<Light[]>);
+  }).then((res) => res.json() as Promise<ILight[]>);
 }
 
-export interface Group {
+export async function toggleLightPower(lightId: string, token: string) {
+  return fetch(`https://api.lifx.com/v1/lights/id:${lightId}/toggle`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then((res) => res.json() as Promise<ILight[]>);
+}
+
+export interface IGroup {
   id: string;
   name: string;
 }
 
-export interface Location {
+export interface ILocation {
   id: string;
   name: string;
 }
 
-export interface Product {
+export interface IProduct {
   name: string;
   identifier: string;
   company: string;
@@ -35,23 +44,23 @@ export interface Product {
   };
 }
 
-export interface Color {
+export interface IColor {
   hue: number;
   saturation: number;
   kelvin: number;
 }
 
-export interface Light {
+export interface ILight {
   id: string;
   uuid: string;
   label: string;
   connected: true;
   power: "on" | "off";
-  color: Color;
+  color: IColor;
   brightness: number;
-  group: Group;
-  location: Location;
-  product: Product;
+  group: IGroup;
+  location: ILocation;
+  product: IProduct;
   last_seen: string;
   seconds_since_seen: number;
 }

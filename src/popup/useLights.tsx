@@ -1,12 +1,14 @@
 import { useQuery } from "react-query";
 import { useAuth } from "./AuthContext";
-import { getLights, Group, Light, Location } from "./lifxClient";
+import { getLights, IGroup, ILight, ILocation } from "./lifxClient";
+
+export const LIGHTS_QUERY_KEY = "lights";
 
 export function useLights() {
   const { token } = useAuth();
   return useQuery(
     [
-      "lights",
+      LIGHTS_QUERY_KEY,
       {
         token: token,
       },
@@ -19,7 +21,7 @@ export function useLights() {
       select: (data) => {
         const lights = data;
         const allLocations = lights.map((light) => light.location);
-        const locations: Location[] = [];
+        const locations: ILocation[] = [];
         allLocations.forEach((location) => {
           if (!locations.find((l) => l.id === location.id)) {
             locations.push(location);
@@ -27,26 +29,29 @@ export function useLights() {
         });
 
         const allGroups = lights.map((light) => light.group);
-        const groups: Group[] = [];
+        const groups: IGroup[] = [];
         allGroups.forEach((group) => {
           if (!groups.find((g) => g.id === group.id)) {
             groups.push(group);
           }
         });
 
-        const groupsByLocation: Record<string, Group> = {};
-        const lightsByGroup: Record<string, Light> = {};
+        const groupsByLocation: Record<string, IGroup> = {};
+        const lightsByGroup: Record<string, ILight[]> = {};
 
         lights.forEach((light) => {
-          const location = light.location;
           const group = light.group;
+          const location = light.location;
 
           if (!groupsByLocation[location.id]) {
             groupsByLocation[location.id] = group;
           }
 
-          if (!lightsByGroup[group.id]) {
-            lightsByGroup[group.id] = light;
+          let existingGroup = lightsByGroup[group.id];
+          if (!existingGroup) {
+            lightsByGroup[group.id] = [light];
+          } else {
+            lightsByGroup[group.id] = [...existingGroup, light];
           }
         });
 
