@@ -1,15 +1,14 @@
 import { useAuth } from "../AuthContext";
 import { IColor, IGroup, ILight, toggleLightPower } from "../lifxClient";
 import { LocationControls } from "./LocationControls";
-import { OvalSpinner } from "../OvalSpinner";
 import { LIGHTS_QUERY_KEY, useLights } from "../useLights";
 import classNames from "classnames";
 import { useQueryClient } from "react-query";
+import { LightsScreenSkeleton } from "./LightsScreenSkeleton";
 
 function useGroup(id: string) {
   const { data } = useLights();
   const groups = data?.groups ?? [];
-
   return groups.find((g) => g.id === id);
 }
 
@@ -18,22 +17,23 @@ export function LightsScreen() {
   const { isLoading, data } = useLights();
 
   return (
-    <div className="flex flex-col text-base space-y-12 h-full justify-center items-center">
+    <div className="flex flex-col text-base h-full justify-center items-center">
       {isLoading ? (
-        <div className="text-center">
-          <OvalSpinner />
+        <div className="flex flex-col w-full h-full">
+          <LightsScreenSkeleton />
         </div>
       ) : (
-        <div className="flex flex-col w-full h-full space-y-12">
-          <LocationControls />
+        <div className="flex flex-col w-full h-full">
+          <div className="flex flex-grow-0 px-5 py-5 shadow-2xl">
+            <LocationControls />
+          </div>
 
-          <div className="flex flex-col space-y-12">
+          <div className="flex h-full flex-col space-y-12 px-5 pt-4 pb-6 overflow-y-auto">
             {data?.groups.map((group: IGroup) => (
               <LightGroup key={group.id} groupId={group.id} />
             ))}
+            <button onClick={() => clearToken()}>Remove token</button>
           </div>
-
-          <button onClick={() => clearToken()}>Remove token</button>
         </div>
       )}
     </div>

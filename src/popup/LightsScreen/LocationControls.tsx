@@ -16,7 +16,7 @@ export function LocationControls() {
         ) : (
           <div>All Lights</div>
         )}
-        <div>Toggle is {isAnyLightOn ? "on" : "off"}</div>
+        {/* <div>Toggle is {isAnyLightOn ? "on" : "off"}</div> */}
       </div>
       <div className="">
         <button
@@ -30,7 +30,7 @@ export function LocationControls() {
   );
 }
 
-function GearIcon(props: any) {
+export function GearIcon(props: any) {
   return (
     <svg
       {...props}
