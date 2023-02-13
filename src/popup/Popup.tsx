@@ -8,6 +8,7 @@ import { popupQueryClient } from "./popupQueryClient";
 import { Screen } from "./Screen";
 import { ToastProvider } from "./ToastContext";
 import { SettingsScreen } from "./SettingsScreen";
+import { AnimatePresence } from "framer-motion";
 
 export const Popup = () => {
   return (
@@ -37,13 +38,13 @@ function AuthedScreens() {
   );
 
   return (
-    <>
+    <AnimatePresence>
       {activeScreen === "lights" && (
         <LightsScreen onSettingsClick={() => setActiveScreen("settings")} />
       )}
       {activeScreen === "settings" && (
         <SettingsScreen onClose={() => setActiveScreen("lights")} />
       )}
-    </>
+    </AnimatePresence>
   );
 }

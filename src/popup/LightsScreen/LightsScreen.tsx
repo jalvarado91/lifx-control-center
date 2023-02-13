@@ -5,6 +5,7 @@ import { LIGHTS_QUERY_KEY, useLights } from "../useLights";
 import classNames from "classnames";
 import { useQueryClient } from "@tanstack/react-query";
 import { LightsScreenSkeleton } from "./LightsScreenSkeleton";
+import { motion } from "framer-motion";
 
 function useGroup(id: string) {
   const { data } = useLights();
@@ -19,7 +20,12 @@ export function LightsScreen({ onSettingsClick }: LightScreenProps) {
   const { isLoading, data } = useLights();
 
   return (
-    <div className="flex flex-col text-base h-full justify-center items-center">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="flex flex-col text-base h-full justify-center items-center"
+    >
       {isLoading ? (
         <div className="flex flex-col w-full h-full">
           <LightsScreenSkeleton />
@@ -37,7 +43,7 @@ export function LightsScreen({ onSettingsClick }: LightScreenProps) {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -123,7 +129,9 @@ function Light({ light, onToggle }: LightProps) {
           {isOn && (
             <div className="absolute inset-0 bg-black hover:shadow-inner transition-opacity opacity-25 hover:opacity-30 rounded-full"></div>
           )}
-          <div
+          <motion.div
+            layout
+            transition={{ ease: "easeInOut" }}
             style={{
               background: hslColor,
             }}
@@ -131,9 +139,9 @@ function Light({ light, onToggle }: LightProps) {
               "absolute inline-block border-2 border-white rounded-full h-8 w-8 m-2",
               isOn ? "right-0" : "left-0"
             )}
-          ></div>
+          ></motion.div>
           {isOff && (
-            <div className="absolute hover:opacity-60 transotion transition-opacity inset-0 bg-black opacity-70 rounded-full"></div>
+            <div className="absolute hover:opacity-60 transition-opacity inset-0 bg-black opacity-70 rounded-full"></div>
           )}
         </button>
       </div>
