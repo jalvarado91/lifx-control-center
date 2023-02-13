@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./AuthContext";
 import { LightsScreen } from "./LightsScreen/LightsScreen";
 import { LoginScreen } from "./LoginScreen";
@@ -8,6 +8,7 @@ import { popupQueryClient } from "./popupQueryClient";
 import { Screen } from "./Screen";
 import { ToastProvider } from "./ToastContext";
 import { SettingsScreen } from "./SettingsScreen";
+import { AnimatePresence } from "framer-motion";
 
 export const Popup = () => {
   return (
@@ -37,13 +38,13 @@ function AuthedScreens() {
   );
 
   return (
-    <>
+    <AnimatePresence>
       {activeScreen === "lights" && (
         <LightsScreen onSettingsClick={() => setActiveScreen("settings")} />
       )}
       {activeScreen === "settings" && (
         <SettingsScreen onClose={() => setActiveScreen("lights")} />
       )}
-    </>
+    </AnimatePresence>
   );
 }

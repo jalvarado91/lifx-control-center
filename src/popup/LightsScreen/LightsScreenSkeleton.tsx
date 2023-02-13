@@ -3,7 +3,7 @@ import classNames from "classnames";
 export function LightsScreenSkeleton() {
   return (
     <div className="flex flex-col w-full h-full">
-      <div className="flex flex-grow-0 px-5 py-5 shadow-2xl">
+      <div className="flex flex-grow-0 px-5 py-5">
         <div className="flex space-x-3 w-full justify-between animate-pulse">
           <div className="flex px-4 py-4 w-full justify-between bg-zinc-900 rounded-xl"></div>
           <div className="">
