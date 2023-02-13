@@ -1,9 +1,9 @@
 import { useAuth } from "../AuthContext";
 import { IColor, IGroup, ILight, toggleLightPower } from "../lifxClient";
 import { LocationControls } from "./LocationControls";
-import { LIGHTS_QUERY_KEY, useLights } from "../useLights";
+import { LIGHTS_QUERY_KEY, toggleLightInLights, useLights } from "../useLights";
 import classNames from "classnames";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LightsScreenSkeleton } from "./LightsScreenSkeleton";
 import { motion } from "framer-motion";
 
@@ -53,20 +53,14 @@ interface LightGroupProps {
 
 function LightGroup({ groupId }: LightGroupProps) {
   const group = useGroup(groupId);
-  const queryClient = useQueryClient();
-  const { token } = useAuth();
   const { data } = useLights();
 
   const groupLights = data?.lightsByGroup[groupId] ?? [];
 
-  async function onLightClick(lightId: string) {
-    await toggleLightPower(lightId, token ?? "");
+  const toggleLightMutation = useToggleLightMutation();
 
-    // Wait for lifx api to catch up before
-    // syncing light state
-    setTimeout(async () => {
-      await queryClient.refetchQueries([LIGHTS_QUERY_KEY]);
-    }, 1000);
+  async function onLightClick(lightId: string) {
+    toggleLightMutation.mutate(lightId);
   }
 
   if (!group) {
@@ -95,6 +89,57 @@ interface LightProps {
   light: ILight;
   onToggle: () => void;
 }
+
+function useToggleLightMutation() {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (lightId: string) => toggleLightPower(lightId, token ?? ""),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [LIGHTS_QUERY_KEY, { token }],
+      });
+
+      setTimeout(async () => {
+        await queryClient.refetchQueries([LIGHTS_QUERY_KEY, { token }]);
+      }, 1000);
+    },
+    onMutate: async (lightId: string) => {
+      await queryClient.cancelQueries({
+        queryKey: [LIGHTS_QUERY_KEY, { token }],
+      });
+
+      const previousLights = queryClient.getQueryData<ILight[]>([
+        LIGHTS_QUERY_KEY,
+        { token },
+      ]);
+
+      if (previousLights) {
+        queryClient.setQueryData<ILight[]>(
+          [LIGHTS_QUERY_KEY, { token }],
+          toggleLightInLights(previousLights, lightId)
+        );
+      }
+
+      return { previousLights };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousLights) {
+        queryClient.setQueryData<ILight[]>(
+          [LIGHTS_QUERY_KEY, { token }],
+          context.previousLights
+        );
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [LIGHTS_QUERY_KEY, { token }],
+      });
+    },
+  });
+  return mutation;
+}
+
 function Light({ light, onToggle }: LightProps) {
   const hslColor = lightColorToHslString(light.color);
   const isOn = light.power === "on";
