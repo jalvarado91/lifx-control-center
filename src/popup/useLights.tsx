@@ -71,16 +71,10 @@ export function indexLightsData(data: ILight[]) {
   };
 }
 
-export function toggleLightInLights(lights: ILight[], lightId: string) {
-  return lights.map((light) => {
-    if (light.id === lightId) {
-      return {
-        ...light,
-        power: light.power === "on" ? "off" : "on",
-      } satisfies ILight;
-    }
-    return light;
-  });
+export function useGroup(id: string) {
+  const { data } = useLights();
+  const groups = data?.groups ?? [];
+  return groups.find((g) => g.id === id);
 }
 
 async function fetchLights({ queryKey }: any) {
