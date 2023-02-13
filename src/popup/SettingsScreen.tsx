@@ -1,5 +1,5 @@
 import { useAuth } from "./AuthContext";
-import { CloseIcon } from "./LightsScreen/Icons";
+import { CloseIcon, LifxControlCenterLogo } from "./LightsScreen/Icons";
 import { ActionButton } from "./ActionButton";
 import { motion } from "framer-motion";
 
@@ -23,11 +23,13 @@ export function SettingsScreen({ onClose }: SettingScreenProps) {
       <div className="flex flex-col w-full h-full">
         <div className="flex space-x-3 w-full justify-between">
           <div className="flex w-full justify-between">
-            <div className="font-bold">
-              <span role="img" aria-label="light">
-                💡
+            <div className="font-bold flex space-x-2 items-center">
+              <span className="inline-block" role="img" aria-label="light">
+                <LifxControlCenterLogo className="h-9 w-auto inline-block" />
               </span>
-              LIFX <br /> Control Center
+              <div>
+                <span className="text-xl">LIFX</span> <br /> Control Center
+              </div>
             </div>
           </div>
           <button

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ActionButton } from "./ActionButton";
 import { useAuth } from "./AuthContext";
+import { LifxControlCenterLogo } from "./LightsScreen/Icons";
 import { popupQueryClient } from "./popupQueryClient";
 import { useToast } from "./ToastContext";
 
@@ -17,12 +18,14 @@ export function LoginScreen() {
 
   return (
     <div className="flex flex-col text-base space-y-12 p-5 h-full justify-center items-center">
-      <div className="text-center flex flex-col items-center justify-center">
-        <div className="text-xl font-bold">
-          <span role="img" aria-label="light">
-            💡
+      <div className="flex flex-col items-center justify-center">
+        <div className="font-bold flex space-x-2 items-center">
+          <span className="inline-block" role="img" aria-label="light">
+            <LifxControlCenterLogo className="h-9 w-auto inline-block" />
           </span>
-          LIFX <br /> Control Center
+          <div>
+            <span className="text-xl">LIFX</span> <br /> Control Center
+          </div>
         </div>
       </div>
       <div className="flex flex-col space-y-14 justify-between">
