@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./AuthContext";
 import { LightsScreen } from "./LightsScreen/LightsScreen";
 import { LoginScreen } from "./LoginScreen";

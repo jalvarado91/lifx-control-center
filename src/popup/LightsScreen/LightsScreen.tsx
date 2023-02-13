@@ -3,7 +3,7 @@ import { IColor, IGroup, ILight, toggleLightPower } from "../lifxClient";
 import { LocationControls } from "./LocationControls";
 import { LIGHTS_QUERY_KEY, useLights } from "../useLights";
 import classNames from "classnames";
-import { useQueryClient } from "react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { LightsScreenSkeleton } from "./LightsScreenSkeleton";
 
 function useGroup(id: string) {
@@ -26,7 +26,7 @@ export function LightsScreen({ onSettingsClick }: LightScreenProps) {
         </div>
       ) : (
         <div className="flex flex-col w-full h-full">
-          <div className="flex flex-grow-0 px-5 py-5 shadow-2xl">
+          <div className="flex flex-grow-0 px-5 py-5">
             <LocationControls onSettingsClick={onSettingsClick} />
           </div>
 
@@ -59,7 +59,7 @@ function LightGroup({ groupId }: LightGroupProps) {
     // Wait for lifx api to catch up before
     // syncing light state
     setTimeout(async () => {
-      await queryClient.refetchQueries(LIGHTS_QUERY_KEY);
+      await queryClient.refetchQueries([LIGHTS_QUERY_KEY]);
     }, 1000);
   }
 
@@ -127,7 +127,6 @@ function Light({ light, onToggle }: LightProps) {
             style={{
               background: hslColor,
             }}
-            justify-items-stretch
             className={classNames(
               "absolute inline-block border-2 border-white rounded-full h-8 w-8 m-2",
               isOn ? "right-0" : "left-0"
