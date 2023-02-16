@@ -22,7 +22,7 @@ export async function getManifest() {
       48: "./assets/icon-512.png",
       128: "./assets/icon-512.png",
     },
-    permissions: ["tabs", "storage", "activeTab", "http://*/", "https://*/"],
+    permissions: ["storage"],
   };
 
   if (isDev) {
@@ -46,8 +46,8 @@ export async function getManifest() {
       48: "./assets/icon-512.png",
       128: "./assets/icon-512.png",
     },
-    permissions: ["tabs", "storage", "activeTab"],
-    host_permissions: ["http://*/", "https://*/"],
+    permissions: ["storage"],
+    // host_permissions: ["http://*/", "https://*/"],
   };
 
   return isDev ? manifestV2 : manifest;

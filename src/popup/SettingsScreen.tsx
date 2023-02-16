@@ -63,7 +63,7 @@ export function SettingsScreen({ onClose }: SettingScreenProps) {
               . Built by{" "}
               <a
                 className="text-blue-300"
-                href="https://twitter.com/Jalvarado91"
+                href="https://jalvarado.dev"
               >
                 @jalvarado91
               </a>
