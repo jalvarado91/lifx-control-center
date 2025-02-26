@@ -4,6 +4,7 @@ import { motion, useMotionValue, useTransform, animate, AnimatePresence } from "
 import { useBrightnessMutation } from "./useBrightnessMutation";
 import { useColorMutation } from "./useColorMutation";
 import { useRef, useEffect, useState } from "react";
+import { useToggleLightMutation } from "./useToggleLightMutation";
 
 interface LightProps {
   light: ILight;
@@ -32,12 +33,12 @@ function kelvinToColor(kelvin: number): string {
 }
 
 function lightColorToHslString(lightColor: IColor) {
-  const kelvin = lightColor.kelvin;
-  // Base the lightness on both kelvin and saturation
-  // At 0 saturation, we want white (100% lightness)
-  // At full saturation, we want the kelvin-adjusted lightness
-  const kelvinLightness = 100 * (1 - 1 / (kelvin / 4000 + 1));
-  const lightness = kelvinLightness + ((100 - kelvinLightness) * (1 - lightColor.saturation));
+  // For saturated colors, we want a base lightness of 50%
+  // For desaturated colors, we want to blend towards white based on kelvin
+  const kelvinFactor = Math.min(1, lightColor.kelvin / 6500);
+  const baseLight = 50;
+  const whiteness = (1 - lightColor.saturation) * (100 - baseLight);
+  const lightness = baseLight + whiteness * kelvinFactor;
 
   const hslColor = `hsl(${lightColor.hue.toFixed(0)},${
     lightColor.saturation * 100
@@ -54,6 +55,7 @@ export function Light({ light, onToggle, showLabel = true, isRefreshing = false 
   const brightness = light.brightness;
   const brightnessMutation = useBrightnessMutation();
   const colorMutation = useColorMutation();
+  const toggleMutation = useToggleLightMutation();
   const containerRef = useRef<HTMLDivElement>(null);
   const constraintsRef = useRef<HTMLDivElement>(null);
   const colorWheelRef = useRef<HTMLDivElement>(null);
@@ -64,6 +66,14 @@ export function Light({ light, onToggle, showLabel = true, isRefreshing = false 
   const lastBrightnessRef = useRef(brightness);
   const isUserInteraction = useRef(false);
   const pendingColor = useRef<IColor | null>(null);
+
+  // Consider a light to be refreshing if either:
+  // 1. The parent indicates it's refreshing (initial load)
+  // 2. Any mutation affecting this specific light is in progress
+  const isLightRefreshing = isRefreshing || 
+    (brightnessMutation.isLoading && brightnessMutation.variables?.lightId === light.id) ||
+    (colorMutation.isLoading && colorMutation.variables?.lightId === light.id) ||
+    (toggleMutation.isLoading && toggleMutation.variables === light.id);
 
   // Brightness control motion values
   const x = useMotionValue(0);
@@ -214,7 +224,7 @@ export function Light({ light, onToggle, showLabel = true, isRefreshing = false 
               background: hslColor,
               width: backgroundWidth,
             }}
-            animate={isRefreshing ? {
+            animate={isLightRefreshing ? {
               opacity: [1, 0.7, 1],
               transition: {
                 duration: 1,
