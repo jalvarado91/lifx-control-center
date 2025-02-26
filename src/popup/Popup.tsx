@@ -9,6 +9,8 @@ import { Screen } from "./Screen";
 import { ToastProvider } from "./ToastContext";
 import { SettingsScreen } from "./SettingsScreen";
 import { AnimatePresence } from "framer-motion";
+import { LightDetail } from "./LightsScreen/LightDetail";
+import { ILight } from "./lifxClient";
 
 export const Popup = () => {
   return (
@@ -32,18 +34,27 @@ function App() {
   return !token ? <LoginScreen /> : <AuthedScreens />;
 }
 
+type Screen = "lights" | "settings" | { type: "light-detail"; light: ILight };
+
 function AuthedScreens() {
-  const [activeScreen, setActiveScreen] = useState<"lights" | "settings">(
-    "lights"
-  );
+  const [activeScreen, setActiveScreen] = useState<Screen>("lights");
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {activeScreen === "lights" && (
-        <LightsScreen onSettingsClick={() => setActiveScreen("settings")} />
+        <LightsScreen 
+          onSettingsClick={() => setActiveScreen("settings")}
+          onLightDetail={(light) => setActiveScreen({ type: "light-detail", light })}
+        />
       )}
       {activeScreen === "settings" && (
         <SettingsScreen onClose={() => setActiveScreen("lights")} />
+      )}
+      {typeof activeScreen !== "string" && activeScreen.type === "light-detail" && (
+        <LightDetail 
+          light={activeScreen.light}
+          onBack={() => setActiveScreen("lights")}
+        />
       )}
     </AnimatePresence>
   );

@@ -15,6 +15,34 @@ export async function toggleLightPower(lightId: string, token: string) {
   }).then((res) => res.json() as Promise<ILight[]>);
 }
 
+export async function setBrightness(lightId: string, brightness: number, token: string) {
+  return fetch(`https://api.lifx.com/v1/lights/id:${lightId}/state`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      brightness,
+      duration: 0.0,
+    }),
+  }).then((res) => res.json() as Promise<ILight[]>);
+}
+
+export async function setColor(lightId: string, color: IColor, token: string) {
+  return fetch(`https://api.lifx.com/v1/lights/id:${lightId}/state`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      color,
+      duration: 0.0,
+    }),
+  }).then((res) => res.json() as Promise<ILight[]>);
+}
+
 export interface IGroup {
   id: string;
   name: string;

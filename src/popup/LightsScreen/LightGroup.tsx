@@ -1,14 +1,16 @@
 import { useGroup, useLights } from "../useLights";
 import { Light } from "./Light";
 import { useToggleLightMutation } from "./useToggleLightMutation";
+import { ILight } from "../lifxClient";
 
 interface LightGroupProps {
   groupId: string;
+  onLightDetail: (light: ILight) => void;
 }
 
-export function LightGroup({ groupId }: LightGroupProps) {
+export function LightGroup({ groupId, onLightDetail }: LightGroupProps) {
   const group = useGroup(groupId);
-  const { data } = useLights();
+  const { data, isFetching } = useLights();
 
   const groupLights = data?.lightsByGroup[groupId] ?? [];
 
@@ -33,6 +35,8 @@ export function LightGroup({ groupId }: LightGroupProps) {
             light={light}
             key={light.id}
             onToggle={() => onLightClick(light.id)}
+            onDetailClick={() => onLightDetail(light)}
+            isRefreshing={isFetching}
           />
         ))}
       </div>

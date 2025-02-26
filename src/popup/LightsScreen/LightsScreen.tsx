@@ -1,4 +1,4 @@
-import { IGroup } from "../lifxClient";
+import { IGroup, ILight } from "../lifxClient";
 import { LocationControls } from "./LocationControls";
 import { useLights } from "../useLights";
 import { LightsScreenSkeleton } from "./LightsScreenSkeleton";
@@ -7,8 +7,10 @@ import { LightGroup } from "./LightGroup";
 
 interface LightScreenProps {
   onSettingsClick: () => void;
+  onLightDetail: (light: ILight) => void;
 }
-export function LightsScreen({ onSettingsClick }: LightScreenProps) {
+
+export function LightsScreen({ onSettingsClick, onLightDetail }: LightScreenProps) {
   const { isLoading, data } = useLights();
 
   return (
@@ -30,7 +32,11 @@ export function LightsScreen({ onSettingsClick }: LightScreenProps) {
 
           <div className="flex h-full flex-col space-y-12 px-5 pt-4 pb-6 overflow-y-auto">
             {data?.groups.map((group: IGroup) => (
-              <LightGroup key={group.id} groupId={group.id} />
+              <LightGroup 
+                key={group.id} 
+                groupId={group.id} 
+                onLightDetail={onLightDetail}
+              />
             ))}
           </div>
         </div>

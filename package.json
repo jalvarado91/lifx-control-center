@@ -1,7 +1,7 @@
 {
   "name": "lifx-control-center",
   "displayName": "LIFX Control Center",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Control your lifx devices from your browser",
   "private": true,
   "scripts": {

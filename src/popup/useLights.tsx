@@ -21,6 +21,7 @@ export function useLights() {
       select: (data) => {
         return indexLightsData(data);
       },
+      keepPreviousData: true,
     }
   );
 }
