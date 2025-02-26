@@ -11,6 +11,8 @@ interface LightProps {
   onToggle: () => void;
   showLabel?: boolean;
   isRefreshing?: boolean;
+  showDivider?: boolean;
+  onExpand?: (isExpanded: boolean) => void;
 }
 
 function kelvinToColor(kelvin: number): string {
@@ -47,7 +49,7 @@ function lightColorToHslString(lightColor: IColor) {
   return hslColor;
 }
 
-export function Light({ light, onToggle, showLabel = true, isRefreshing = false }: LightProps) {
+export function Light({ light, onToggle, showLabel = true, isRefreshing = false, showDivider = false, onExpand }: LightProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const hslColor = lightColorToHslString(light.color);
   const isOn = light.power === "on";
@@ -190,7 +192,11 @@ export function Light({ light, onToggle, showLabel = true, isRefreshing = false 
         <div className="flex justify-between items-center">
           <div className="text-sm font-semibold">{light.label}</div>
           <button
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={() => {
+              const newExpanded = !isExpanded;
+              setIsExpanded(newExpanded);
+              onExpand?.(newExpanded);
+            }}
             className="p-1 hover:bg-zinc-700 rounded transition-colors"
           >
             <motion.svg 
@@ -298,7 +304,7 @@ export function Light({ light, onToggle, showLabel = true, isRefreshing = false 
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="space-y-6 pt-4">
+            <div className="space-y-6 pt-4 pb-4">
               {/* Color wheel */}
               <div className="relative aspect-square w-full">
                 <div 
@@ -454,6 +460,9 @@ export function Light({ light, onToggle, showLabel = true, isRefreshing = false 
                 </div>
               </div>
             </div>
+            {showDivider && (
+              <div className="h-px bg-zinc-800 mt-4" />
+            )}
           </motion.div>
         )}
       </AnimatePresence>
