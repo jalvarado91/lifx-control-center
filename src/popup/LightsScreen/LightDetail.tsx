@@ -69,12 +69,12 @@ export function LightDetail({ light: initialLight, onBack }: LightDetailProps) {
   useEffect(() => {
     if (!colorWheelRef.current) return;
     const rect = colorWheelRef.current.getBoundingClientRect();
-    const radius = (rect.width - 48) / 2; // Subtract knob width to keep within bounds
+    const radius = (rect.width - 48) / 2;
     
-    // Convert hue and saturation to x,y position (subtract 90 degrees to match the wheel)
     const hueRadians = ((light.color.hue - 90) * Math.PI) / 180;
     const saturationRadius = radius * light.color.saturation;
     
+    // Position relative to center, then offset by knob size
     const newX = Math.cos(hueRadians) * saturationRadius;
     const newY = Math.sin(hueRadians) * saturationRadius;
     
@@ -155,40 +155,34 @@ export function LightDetail({ light: initialLight, onBack }: LightDetailProps) {
                 if (!colorWheelRef.current) return;
 
                 const rect = colorWheelRef.current.getBoundingClientRect();
-                const radius = rect.width / 2;
-                
-                // Get relative position within the wheel
-                const relativeX = info.point.x - rect.left;
-                const relativeY = info.point.y - rect.top;
+                const radius = (rect.width - 48) / 2;
+                const center = rect.width / 2;
                 
                 // Calculate position relative to center
-                const dx = relativeX - radius;
-                const dy = relativeY - radius;
+                const dx = info.point.x - rect.left - center;
+                const dy = info.point.y - rect.top - center;
                 
                 // Calculate angle and constrained distance
                 const angle = Math.atan2(dy, dx);
                 const distance = Math.min(Math.sqrt(dx * dx + dy * dy), radius);
                 
-                // Calculate constrained position
-                const newX = Math.cos(angle) * distance - 16;
-                const newY = Math.sin(angle) * distance - 16;
+                // Position relative to center, no need to subtract knob size since we're using center-based positioning
+                const newX = Math.cos(angle) * distance;
+                const newY = Math.sin(angle) * distance;
 
                 x.set(newX);
                 y.set(newY);
 
                 // Convert to hue (adjust by +90 degrees to match color wheel orientation)
-                const hue = (((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360);
+                const hue = (((angle * 180) / Math.PI + 90 + 360) % 360);
                 const saturation = Math.min(distance / radius, 1);
                 
-                // Update the knob color for preview using the same color calculation as the light
                 const previewColor = {
                   hue,
                   saturation,
                   kelvin: light.color.kelvin,
                 };
                 currentColor.set(lightColorToHslString(previewColor));
-
-                // Store the pending color update
                 pendingColor.current = previewColor;
               }}
               onDragEnd={() => {

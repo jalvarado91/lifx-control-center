@@ -7,10 +7,9 @@ import { LightGroup } from "./LightGroup";
 
 interface LightScreenProps {
   onSettingsClick: () => void;
-  onLightDetail: (light: ILight) => void;
 }
 
-export function LightsScreen({ onSettingsClick, onLightDetail }: LightScreenProps) {
+export function LightsScreen({ onSettingsClick }: LightScreenProps) {
   const { isLoading, data } = useLights();
 
   return (
@@ -35,7 +34,6 @@ export function LightsScreen({ onSettingsClick, onLightDetail }: LightScreenProp
               <LightGroup 
                 key={group.id} 
                 groupId={group.id} 
-                onLightDetail={onLightDetail}
               />
             ))}
           </div>

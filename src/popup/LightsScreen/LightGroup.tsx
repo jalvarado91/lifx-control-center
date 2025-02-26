@@ -5,10 +5,9 @@ import { ILight } from "../lifxClient";
 
 interface LightGroupProps {
   groupId: string;
-  onLightDetail: (light: ILight) => void;
 }
 
-export function LightGroup({ groupId, onLightDetail }: LightGroupProps) {
+export function LightGroup({ groupId }: LightGroupProps) {
   const group = useGroup(groupId);
   const { data, isFetching } = useLights();
 
@@ -35,7 +34,6 @@ export function LightGroup({ groupId, onLightDetail }: LightGroupProps) {
             light={light}
             key={light.id}
             onToggle={() => onLightClick(light.id)}
-            onDetailClick={() => onLightDetail(light)}
             isRefreshing={isFetching}
           />
         ))}
